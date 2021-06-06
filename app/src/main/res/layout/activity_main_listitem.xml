@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="item"
+            type="org.dieschnittstelle.mobile.android.skeleton.model.DataItem" />
+        <variable
+            name="controller"
+            type="org.dieschnittstelle.mobile.android.skeleton.MainActivity" />
+    </data>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/itemCompleted"
+            android:checked="@={item.completed}"
+            android:onClick="@{() -> controller.onItemCompletedInListView(item)}"
+            android:layout_gravity="center_vertical"
+            android:focusable="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </CheckBox>
+        <TextView
+            android:id="@+id/itemName"
+            android:text="@{item.name}"
+            android:padding="15dp"
+            android:textSize="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+        </TextView>
+    </LinearLayout>
+</layout>
