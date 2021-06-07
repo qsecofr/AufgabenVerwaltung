@@ -23,6 +23,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -148,7 +149,8 @@ MainActivity extends AppCompatActivity {
 //        this.listView = findViewById(R.id.listView);
 
         //load data
-        listViewAdapter.addAll(readAllDataItems());   //7400
+//        listViewAdapter.addAll(readAllDataItems());
+        readAllDataItems(items -> listViewAdapter.addAll(items));
     }
 
 
@@ -254,7 +256,7 @@ MainActivity extends AppCompatActivity {
         showFeedbackMessage(msg);
     }
 
-    protected List<DataItem> readAllDataItems(){
+    protected void readAllDataItems(Consumer<List<DataItem>> onRead){
         this.progressBar.setVisibility(View.VISIBLE);
         new Thread(() -> {
             try {
@@ -272,11 +274,9 @@ MainActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 this.progressBar.setVisibility(View.GONE);
+                onRead.accept(items);
             });
-
         }).start();
-
-        return items;
     }
 
 }
