@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 //import android.provider.ContactsContract;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -255,18 +256,27 @@ MainActivity extends AppCompatActivity {
 
     protected List<DataItem> readAllDataItems(){
         this.progressBar.setVisibility(View.VISIBLE);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        new Thread(() -> {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
-        return Stream.of("lorem", "ipsum", "dolor", "sit", "amet", "olor", "adipiscing", "elit", "laren")
-                .map(itemstr -> {
-                    DataItem itemobj = new DataItem(itemstr);
-                    itemobj.setId(DataItem.nextId());
-                    return itemobj;
-                }).collect(Collectors.toList());
+            List<DataItem> items = Stream.of("lorem", "ipsum", "dolor", "sit", "amet", "olor", "adipiscing", "elit", "laren")
+                    .map(itemstr -> {
+                        DataItem itemobj = new DataItem(itemstr);
+                        itemobj.setId(DataItem.nextId());
+                        return itemobj;
+                    }).collect(Collectors.toList());
+
+            runOnUiThread(() -> {
+                this.progressBar.setVisibility(View.GONE);
+            });
+
+        }).start();
+
+        return items;
     }
 
 }
