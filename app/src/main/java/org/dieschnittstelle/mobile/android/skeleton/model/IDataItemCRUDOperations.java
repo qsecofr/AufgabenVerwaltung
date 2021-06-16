@@ -1,3 +1,5 @@
+package org.dieschnittstelle.mobile.android.skeleton.model;
+
 import android.provider.ContactsContract;
 
 import androidx.recyclerview.widget.LinearSmoothScroller;

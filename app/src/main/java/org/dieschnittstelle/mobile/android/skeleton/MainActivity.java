@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 //import android.provider.ContactsContract;
-import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,7 +34,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityMainListitemBinding;
+import org.dieschnittstelle.mobile.android.skeleton.model.impl.RoomDataItemCRUDOperationImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.impl.SimpleDataItemCRUDOperationsImpl;
+import org.dieschnittstelle.mobile.android.skeleton.model.impl.ThreadedDataItemCRUDOperationsAsyncImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+import org.dieschnittstelle.mobile.android.skeleton.model.IDataItemCRUDOperationsAsync;
 
 public class
 MainActivity extends AppCompatActivity {
@@ -72,6 +75,7 @@ MainActivity extends AppCompatActivity {
     public static final String ARG_MARKER_TIME = "%T";
     public static final String ARG_MARKER_STRING = "%s";
 
+    private IDataItemCRUDOperationsAsync crudOperations;
     //arrayAdapter to allow Checkbox and DetailView being used
     private class DataItemsAdapter extends ArrayAdapter<DataItem>{
         private int layoutResource;
@@ -150,7 +154,8 @@ MainActivity extends AppCompatActivity {
 
         //load data
 //        listViewAdapter.addAll(readAllDataItems());
-        readAllDataItems(items -> listViewAdapter.addAll(items));
+        this.crudOperations = new ThreadedDataItemCRUDOperationsAsyncImpl(new RoomDataItemCRUDOperationImpl(this), this, this.progressBar);
+        this.crudOperations.readAllDataItems(items -> listViewAdapter.addAll(items));
     }
 
 
@@ -190,7 +195,7 @@ MainActivity extends AppCompatActivity {
         else if (requestCode == CALL_DETAILVIEW_FOR_EDIT){
             if(resultCode == Activity.RESULT_OK){
                 DataItem editedItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
-                this.onItemEdited(editedItem);
+                this.onItemUpdated(editedItem);
                 msg = logtag + "Item " + editedItem.getName() + " updated. With RESULT_OK at " + ARG_MARKER_TIME;
             }
             else {
@@ -224,36 +229,47 @@ MainActivity extends AppCompatActivity {
 //                )
 //         .show();
         Log.i(logtag, msg);
-        Snackbar.make(findViewById(R.id.rootView), msg, Snackbar.LENGTH_INDEFINITE).show();
+        Snackbar.make(findViewById(R.id.rootView), msg, Snackbar.LENGTH_SHORT).show();
 
         Log.v(logtag, "showFeedbackMessage Show Snackbar");
     }
 
     protected void onNewItemCreated(DataItem item){
-        //item.setId(DataItem.nextId()); // nach onCreate in DetailedView verschocben
-        this.listViewAdapter.add(item);
-        Log.i(logtag, ": list is now: " + this.items);
-        this.listView.setSelection(this.listViewAdapter.getPosition(item));
+        //item.setId(DataItem.nextId()); // nach onCreate in DetailedView verschoben
+
+        this.crudOperations.createDataItem(item, created -> {
+            this.listViewAdapter.add(created);
+            Log.i(logtag, ": list is now: " + this.items);
+            this.listView.setSelection(this.listViewAdapter.getPosition(created));
+        });
     }
 
-    protected void onItemEdited(DataItem item){
+    protected void onItemUpdated(DataItem item){
         //get position of changed item
-        int pos = this.items.indexOf(item);
-        //remove old, add new item, update view
-        this.items.remove(pos);
-        this.items.add(pos,item);
-        this.listViewAdapter.notifyDataSetChanged();
-        Log.i(logtag, ": List has been updated at pos: " + pos + "New Item: " + this.items);
 
-        //position the view to the new element
-        this.listView.setSelection(this.listViewAdapter.getPosition(item));
+        //remove old, add new item, update view
+        this.crudOperations.updateDataItem(item, updated -> {
+            int pos = this.items.indexOf(updated);
+            this.items.remove(pos);
+            this.items.add(pos,updated);
+            this.listViewAdapter.notifyDataSetChanged();
+            Log.i(logtag, ": List has been updated at pos: " + pos + "New Item: " + this.items);
+
+            //position the view to the new element
+            this.listView.setSelection(pos);
+        });
+
+
     }
 
     public void onItemCompletedInListView(DataItem item){
 
-        String msg;
-        msg = logtag + "Item " + item.getName() + " Status Completed changed: " +item.isCompleted() + ".";
-        showFeedbackMessage(msg);
+        this.crudOperations.updateDataItem(item, updated -> {
+            String msg;
+            msg = logtag + "Item " + updated.getName() + " Status Completed changed: " +updated.isCompleted() + ".";
+            showFeedbackMessage(msg);
+        });
+
     }
 
     protected void readAllDataItems(Consumer<List<DataItem>> onRead){

@@ -1,3 +1,5 @@
+package org.dieschnittstelle.mobile.android.skeleton.model;
+
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
 
 import java.util.List;
@@ -7,11 +9,11 @@ public interface IDataItemCRUDOperationsAsync  {
 
         public void createDataItem(DataItem item, Consumer<DataItem> onCreated);
 
-        public List<DataItem> readAllDataItems(Consumer<List<DataItem>> onRead);
+        public void readAllDataItems(Consumer<List<DataItem>> onRead);
 
-        public DataItem readDataItem(long id, Consumer<DataItem> onRead);
+        public void readDataItem(long id, Consumer<DataItem> onRead);
 
-        public DataItem updateDataItem(DataItem item, Consumer<DataItem> onUpdated);
+        public void updateDataItem(DataItem item, Consumer<DataItem> onUpdated);
 
         public void deleteDataItem(long id, Consumer<Boolean> onDeleted);
 

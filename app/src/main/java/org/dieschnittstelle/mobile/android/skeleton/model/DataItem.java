@@ -2,11 +2,15 @@ package org.dieschnittstelle.mobile.android.skeleton.model;
 
 import android.util.Log;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import org.dieschnittstelle.mobile.android.skeleton.MainActivity;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Entity
 public class DataItem implements Serializable {
 
     protected static long ID_GENERATOR = 0;
@@ -19,7 +23,9 @@ public class DataItem implements Serializable {
     private static final String logtag = DataItem.class.getSimpleName();
 
     //variables
+    @PrimaryKey(autoGenerate = true)
     private long  id;
+
     private String name;
     private String description;
     private boolean completed;
