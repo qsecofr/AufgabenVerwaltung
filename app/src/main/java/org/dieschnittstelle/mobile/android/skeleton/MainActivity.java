@@ -93,7 +93,7 @@ MainActivity extends AppCompatActivity {
 //                    " , and recyclableItemView" + recyclableItemView;
 //            Log.i(msg);
 
-            View itemView = null;
+            View itemView;
             DataItem currentItem = getItem(position);
 
             if (recyclableItemView != null) {
@@ -177,7 +177,7 @@ MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String msg = new String("#INIT");
+        String msg;
         if (requestCode == CALL_DETAILVIEW_FOR_CREATE){
             if(resultCode == Activity.RESULT_OK){
                 DataItem createdItem = (DataItem) data.getSerializableExtra(DetailViewActivity.ARG_ITEM);
@@ -235,7 +235,7 @@ MainActivity extends AppCompatActivity {
     }
 
     protected void onNewItemCreated(DataItem item){
-        //item.setId(DataItem.nextId()); // nach onCreate in DetailedView verschoben
+        //item.setId(DataItem.nextId()); // moved to DetailedView
 
         this.crudOperations.createDataItem(item, created -> {
             this.listViewAdapter.add(created);
