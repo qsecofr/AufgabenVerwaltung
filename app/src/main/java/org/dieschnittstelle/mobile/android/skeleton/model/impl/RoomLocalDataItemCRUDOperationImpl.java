@@ -17,7 +17,7 @@ import org.dieschnittstelle.mobile.android.skeleton.model.IDataItemCRUDOperation
 
 import java.util.List;
 
-public class RoomDataItemCRUDOperationImpl implements IDataItemCRUDOperations {
+public class RoomLocalDataItemCRUDOperationImpl implements IDataItemCRUDOperations {
 
     @Database(entities = {DataItem.class}, version=1)
     public static abstract class RoomDataItemsDatabase extends RoomDatabase{
@@ -43,7 +43,7 @@ public class RoomDataItemCRUDOperationImpl implements IDataItemCRUDOperations {
 
     private RoomDataItemCRUDAccess roomAccessor;
 
-    public RoomDataItemCRUDOperationImpl(Context databaseOwner) {
+    public RoomLocalDataItemCRUDOperationImpl(Context databaseOwner) {
         RoomDataItemsDatabase db = Room
                 .databaseBuilder(databaseOwner
                         .getApplicationContext()

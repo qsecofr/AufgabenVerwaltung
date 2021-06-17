@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-//import android.provider.ContactsContract;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -17,15 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.text.DateFormat;
-//import java.util.ArrayList;
-//import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -33,20 +26,16 @@ import android.widget.TextView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityMainListitemBinding;
-import org.dieschnittstelle.mobile.android.skeleton.model.impl.RoomDataItemCRUDOperationImpl;
-import org.dieschnittstelle.mobile.android.skeleton.model.impl.SimpleDataItemCRUDOperationsImpl;
-import org.dieschnittstelle.mobile.android.skeleton.model.impl.ThreadedDataItemCRUDOperationsAsyncImpl;
 import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
+import org.dieschnittstelle.mobile.android.skeleton.databinding.ActivityMainListitemBinding;
+import org.dieschnittstelle.mobile.android.skeleton.model.IDataItemCRUDOperations;
 import org.dieschnittstelle.mobile.android.skeleton.model.IDataItemCRUDOperationsAsync;
+import org.dieschnittstelle.mobile.android.skeleton.model.impl.ThreadedDataItemCRUDOperationsAsyncImpl;
+
+
 
 public class
 MainActivity extends AppCompatActivity {
-
-    //private TextView welcomeText;
-    //structures to hold the data
-    //private ViewGroup listView;
-
 
 
     private ListView listView;
@@ -103,7 +92,7 @@ MainActivity extends AppCompatActivity {
 //                        Log.i(msg);
 //                }
                 itemView = recyclableItemView;
-                ActivityMainListitemBinding recycleBinding = (ActivityMainListitemBinding) itemView.getTag();  //5332
+                ActivityMainListitemBinding recycleBinding = (ActivityMainListitemBinding) itemView.getTag();
                 recycleBinding.setItem(currentItem);
             }
             else {
@@ -152,9 +141,11 @@ MainActivity extends AppCompatActivity {
 
 //        this.listView = findViewById(R.id.listView);
 
-        //load data
+//LOAD DATA
 //        listViewAdapter.addAll(readAllDataItems());
-        this.crudOperations = new ThreadedDataItemCRUDOperationsAsyncImpl(new RoomDataItemCRUDOperationImpl(this), this, this.progressBar);
+        IDataItemCRUDOperations crudExecutor = ((DataItemApplication) this.getApplication()).getCRUDOperations();
+        this.crudOperations = new ThreadedDataItemCRUDOperationsAsyncImpl(crudExecutor, this, this.progressBar);
+//        this.crudOperations = new ThreadedDataItemCRUDOperationsAsyncImpl(new RoomLocalDataItemCRUDOperationImpl(this), this, this.progressBar);
         this.crudOperations.readAllDataItems(items -> listViewAdapter.addAll(items));
     }
 
@@ -222,12 +213,7 @@ MainActivity extends AppCompatActivity {
             msg = msg.replace(ARG_MARKER_TIME, currentDateTimeString);
             Log.v(logtag, "showFeedbackMessage Replace TimeMarker");
         }
-//        Toast
-//                .makeText(MainActivity.this,
-//                msg,
-//                Toast.LENGTH_SHORT
-//                )
-//         .show();
+
         Log.i(logtag, msg);
         Snackbar.make(findViewById(R.id.rootView), msg, Snackbar.LENGTH_SHORT).show();
 
@@ -272,28 +258,28 @@ MainActivity extends AppCompatActivity {
 
     }
 
-    protected void readAllDataItems(Consumer<List<DataItem>> onRead){
-        this.progressBar.setVisibility(View.VISIBLE);
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            List<DataItem> items = Stream.of("lorem", "ipsum", "dolor", "sit", "amet", "olor", "adipiscing", "elit", "laren")
-                    .map(itemstr -> {
-                        DataItem itemobj = new DataItem(itemstr);
-                        itemobj.setId(DataItem.nextId());
-                        return itemobj;
-                    }).collect(Collectors.toList());
-
-            runOnUiThread(() -> {
-                this.progressBar.setVisibility(View.GONE);
-                onRead.accept(items);
-            });
-        }).start();
-    }
+//    protected void readAllDataItems(Consumer<List<DataItem>> onRead){
+//        this.progressBar.setVisibility(View.VISIBLE);
+//        new Thread(() -> {
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//
+//            List<DataItem> items = Stream.of("lorem", "ipsum", "dolor", "sit", "amet", "olor", "adipiscing", "elit", "laren")
+//                    .map(itemstr -> {
+//                        DataItem itemobj = new DataItem(itemstr);
+//                        itemobj.setId(DataItem.nextId());
+//                        return itemobj;
+//                    }).collect(Collectors.toList());
+//
+//            runOnUiThread(() -> {
+//                this.progressBar.setVisibility(View.GONE);
+//                onRead.accept(items);
+//            });
+//        }).start();
+//    }
 
 }
 

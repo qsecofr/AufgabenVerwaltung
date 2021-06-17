@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">MAD Demo S21</string>
+    <string name="app_name">Augaben Verwalter 021</string>
     <string name="toast_welcome_again">Welcome again....</string>
     <string name="hint_desc_detailview">Description</string>
     <string name="hint_name_detailview">Name</string>
     <string name="simple_message_template">Selected: %s %T</string>
     <string name="completed">Completed</string>
+    <string name="favourite">Favourite</string>
 </resources>

@@ -17,14 +17,16 @@ import org.dieschnittstelle.mobile.android.skeleton.model.DataItem;
 
 
 public class DetailViewActivity extends AppCompatActivity{
-    private static final String logtag = DetailViewActivity.class.getSimpleName();
 
+//Static
+    private static final String logtag = DetailViewActivity.class.getSimpleName();
+    public static final String ARG_ITEM = "item";
 //    private EditText itemNameText;
 //    private EditText itemDescription;
+//UI
     private FloatingActionButton saveButton;
 
-    public static final String ARG_ITEM = "item";
-
+//Data
     private DataItem item;
     private ActivityDetailviewBinding dataBindingHandle;
 
